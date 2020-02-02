@@ -145,7 +145,7 @@ MyGymEnv::GetReward()
   uint32_t occupied = m_channelOccupation.at(m_currentChannel);
   if (occupied == 1) {
 //    reward_token = 1;
-    reward = -4.0;
+    reward = -1.0;
 
     m_collisions.erase(m_collisions.begin());
     m_collisions.push_back(1);
