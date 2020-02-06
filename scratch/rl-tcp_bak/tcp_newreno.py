@@ -27,7 +27,7 @@ class TcpNewReno(TcpEventBased):
         # segment size
         segmentSize = obs[6]
         # number of acked segments
-        segmentsAcked = obs[9]
+        segmentsAcked = obs[7]
         # estimated bytes in flight
         bytesInFlight  = obs[8]
 
@@ -38,15 +38,14 @@ class TcpNewReno(TcpEventBased):
         if (cWnd < ssThresh):
             # slow start
             if (segmentsAcked >= 1):
-                new_cWnd = cWnd + segmentSize * segmentsAcked
+                new_cWnd = cWnd + segmentSize
 
         if (cWnd >= ssThresh):
             # congestion avoidance
             if (segmentsAcked > 0):
-                for i in range(segmentsAcked):
-                    adder = 1.0 * (segmentSize * segmentSize) / cWnd
-                    adder = int(max(1.0, adder))
-                    new_cWnd = cWnd + adder
+                adder = 1.0 * (segmentSize * segmentSize) / cWnd;
+                adder = int(max (1.0, adder))
+                new_cWnd = cWnd + adder
 
         # GetSsThresh
         new_ssThresh = int(max (2 * segmentSize, bytesInFlight / 2))

@@ -48,7 +48,7 @@ iterationNum = int(args.iterations)
 
 port = 5555
 simTime = 10 # seconds
-stepTime = 0.5  # seconds
+stepTime = 0.1  # seconds
 seed = 12
 simArgs = {"--duration": simTime,}
 debug = False
@@ -95,9 +95,6 @@ def draw_pic(data, label, x_label, y_label, save_path):
 
     plt.savefig(save_path, bbox_inches='tight')
 
-def utilites(throughput, rtt):
-    return 0.01 * np.log(throughput) + 0.001 * np.log(rtt)
-
 
 def get_agent(obs):
     socketUuid = obs[0]
@@ -109,8 +106,8 @@ def get_agent(obs):
             tcpAgent = TcpNewReno()
         else:
             # time-based = 1
-            tcpAgent = TcpTimeDQLearning(ob_space)
-            #tcpAgent = TcpNewReno()
+            #tcpAgent = TcpTimeDQLearning(ob_space)
+            tcpAgent = TcpNewReno()
         tcpAgent.set_spaces(get_agent.ob_space, get_agent.ac_space)
         get_agent.tcpAgents[socketUuid] = tcpAgent
 
@@ -136,7 +133,7 @@ try:
         tcpAgent = get_agent(obs)
 
         while True:
-            if stepIdx % 1 == 0:
+            if stepIdx % 100 == 0:
                 ssThresh_all.append(obs[4])
                 cWnd_all.append(obs[5])
                 segmentSize_all.append(obs[6])
@@ -157,24 +154,6 @@ try:
             print("Step: ", stepIdx)
             next_obs, reward, done, info = env.step(action)
             print("---obs, reward, done, info: ", next_obs, reward, done, info)
-
-            if utilites(next_obs[15], next_obs[11]) > utilites(obs[15], obs[11]):
-                reward = 10
-            else:
-                reward = -20
-
-            target = reward
-            if not done:
-                target = (reward + 0.95 * np.amax(tcpAgent.model.predict(np.reshape(next_obs, [1, ob_space.shape[0]]))[0]))
-
-            tmp_action = 2
-            if obs[5] > next_obs[5]:
-                tmp_action = 1
-            elif obs[5] < next_obs[5]:
-                tmp_action = 0
-            else:
-                tmp_action = 2
-            tcpAgent.fit(obs, target, tmp_action)
 
             # get existing agent of create new TCP agent if needed
             tcpAgent = get_agent(obs)

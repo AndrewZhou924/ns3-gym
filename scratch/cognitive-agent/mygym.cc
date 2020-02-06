@@ -38,8 +38,8 @@ MyGymEnv::MyGymEnv ()
   NS_LOG_FUNCTION (this);
   m_currentNode = 0;
   m_currentChannel = 0;
-  m_collisionTh = 3;
-  m_channelNum = 1;
+  m_collisionTh = 3;  //碰撞阈值设为3,碰撞3次即结束
+  m_channelNum = 1;   // 默认的channel是1
   m_channelOccupation.clear();
 
 //  reward_token = 1;
